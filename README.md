@@ -1,3 +1,3 @@
-# flutter_fake_racer
+# Flutter Pseudo Racing
 
-![Sample Screenshot](screens/capture.gif)
+![Screenshot](screens/capture.gif)
