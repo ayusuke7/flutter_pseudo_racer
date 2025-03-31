@@ -26,7 +26,7 @@ class Player extends Component {
   }
 
   void update(FrameTime time) {
-    z += speed * min(1, time.secondsPassed);
+    z += speed * min(1, time.delta);
 
     if (z >= road.roadLength) {
       z -= road.roadLength;

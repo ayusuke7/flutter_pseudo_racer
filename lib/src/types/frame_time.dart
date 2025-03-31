@@ -1,11 +1,13 @@
 class FrameTime {
   int previous;
-  double secondsPassed;
+  double delta;
 
   FrameTime(
     this.previous,
-    this.secondsPassed,
+    this.delta,
   );
 
-  int get fps => secondsPassed > 0 ? 1 ~/ secondsPassed : 0;
+  int get fps => delta > 0 ? 1 ~/ delta : 0;
+
+  int get seconds => previous ~/ 1000;
 }

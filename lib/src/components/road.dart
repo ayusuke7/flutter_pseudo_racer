@@ -35,7 +35,7 @@ class Road extends Component {
   void init() {
     segments = [];
 
-    for (var i = 0; i < 700; i++) {
+    for (var i = 0; i < 300; i++) {
       _createSegment();
     }
 
@@ -65,9 +65,8 @@ class Road extends Component {
       var currentBottomLine = currentSegment.point.screen.y;
 
       if (i > 0 && currentBottomLine < clipBottomLine) {
-        final previousIndex =
-            currentIndex > 0 ? currentIndex - 1 : segmentCount - 1;
-        final previousSegment = segments[previousIndex];
+        final previousIndex = currentIndex > 0 ? currentIndex : segmentCount;
+        final previousSegment = segments[previousIndex - 1];
 
         _drawSegment(
           canvas,
@@ -92,7 +91,7 @@ class Road extends Component {
     final projectedY = segment.point.scale * tranY;
     final projectedW = segment.point.scale * roadWidth;
 
-    segment.point.screen = VectorSize(
+    segment.point.screen = Vector(
       x: ((1 + projectedX) * size.width / 2).roundToDouble(),
       y: ((1 - projectedY) * size.height / 2).roundToDouble(),
       w: (projectedW * size.width / 2).roundToDouble(),
@@ -108,7 +107,7 @@ class Road extends Component {
       Segment(
         index: n,
         point: SegPoint(
-          screen: VectorSize(x: 0, y: 0, w: 0),
+          screen: Vector(x: 0, y: 0, w: 0),
           world: Vector(x: 0, y: 0, z: z),
           scale: -1,
         ),

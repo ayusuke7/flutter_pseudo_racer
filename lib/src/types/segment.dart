@@ -15,7 +15,7 @@ class Segment {
 }
 
 class SegPoint {
-  VectorSize screen;
+  Vector screen;
   Vector world;
   double scale;
 

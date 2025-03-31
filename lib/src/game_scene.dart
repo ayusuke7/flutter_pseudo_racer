@@ -21,9 +21,7 @@ class GameScene extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.saveLayer(Rect.largest, Paint());
-
-    /* background */
+    /* background sky */
     canvas.drawRect(
       Rect.fromLTWH(0, 0, size.width, size.height),
       Paint()..color = Colors.blue,
@@ -34,8 +32,6 @@ class GameScene extends CustomPainter {
       road.render(canvas, size);
       player.render(canvas, size);
     }
-
-    canvas.restore();
   }
 
   @override

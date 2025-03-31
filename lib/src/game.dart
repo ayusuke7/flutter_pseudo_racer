@@ -41,7 +41,7 @@ class _GameState extends State<Game> {
     SchedulerBinding.instance.scheduleFrameCallback(_loop);
     int currentTime = timeStamp.inMilliseconds;
 
-    _time.secondsPassed = (currentTime - _time.previous) / 1000.0;
+    _time.delta = (currentTime - _time.previous) / 1000.0;
     _time.previous = currentTime;
 
     _update();
@@ -79,38 +79,54 @@ class _GameState extends State<Game> {
 
   @override
   Widget build(BuildContext context) {
+    String gameValues = 'Time: ${_time.seconds}s / FPS: ${_time.fps}';
+    String cameraValues =
+        'Camera Z: ${_camera.z} / Distance: ${_camera.distToPlayer}';
+    String playerValues = 'Position Z: ${_player.z} / Speed: ${_player.speed}';
+    String roadValues =
+        'Segments: ${_road.segmentCount} / Width: ${_road.roadWidth} / Length: ${_road.roadLength}';
+
     return MaterialApp(
       home: Scaffold(
-        backgroundColor: Colors.black,
-        body: Focus(
-          autofocus: true,
-          onKeyEvent: _keyEventHandler,
-          child: Stack(
-            children: [
-              Center(
-                child: CustomPaint(
-                  size: Size(
-                    screenWidth,
-                    screenHeight,
-                  ),
-                  painter: GameScene(
-                    player: _player,
-                    state: _state,
-                    road: _road,
-                    time: _time,
-                  ),
-                ),
-              ),
-              Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  'Camera: ${_camera.z}\nRoad: ${_road.roadLength}\nSpeed: ${_player.speed}\n',
-                  style: const TextStyle(
-                    color: Colors.white,
+        body: Center(
+          child: ColoredBox(
+            color: Colors.black,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Focus(
+                  autofocus: true,
+                  onKeyEvent: _keyEventHandler,
+                  child: CustomPaint(
+                    size: Size(
+                      screenWidth,
+                      screenHeight,
+                    ),
+                    painter: GameScene(
+                      player: _player,
+                      state: _state,
+                      road: _road,
+                      time: _time,
+                    ),
                   ),
                 ),
-              ),
-            ],
+                Column(
+                  children: [
+                    gameValues,
+                    cameraValues,
+                    roadValues,
+                    playerValues,
+                  ]
+                      .map((text) => Text(
+                            text,
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ),
+                          ))
+                      .toList(),
+                ),
+              ],
+            ),
           ),
         ),
       ),
