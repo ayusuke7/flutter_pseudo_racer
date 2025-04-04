@@ -30,7 +30,6 @@ class GameScene extends CustomPainter {
     /* draw coomponents */
     if (state.isPlaying) {
       road.render(canvas, size);
-      player.render(canvas, size);
     }
   }
 

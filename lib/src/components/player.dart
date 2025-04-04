@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui';
 
 import '../types/frame_time.dart';
 import 'camera.dart';
@@ -11,9 +10,8 @@ class Player extends Component {
   late Camera camera;
 
   double speed = 0;
-  double maxSpeed = 0;
-  double aceleration = 0.1;
-  double deceleration = 0.3;
+  double aceleration = 10.0;
+  double deceleration = 30.0;
 
   Player({
     super.x,
@@ -21,9 +19,7 @@ class Player extends Component {
     super.z,
   });
 
-  void init() {
-    maxSpeed = (road.segmentLength) / (1 / 40);
-  }
+  double get maxSpeed => (road.segmentLength) / (1 / 60);
 
   void update(FrameTime time) {
     z += speed * min(1, time.delta);
@@ -33,6 +29,23 @@ class Player extends Component {
     }
   }
 
+  void acelerate() {
+    if (speed < maxSpeed) {
+      speed += aceleration;
+    }
+  }
+
+  void decelerate() {
+    speed = 0;
+    // if (speed > 0) {
+    //   speed -= deceleration;
+    // }
+  }
+
+  void stop() {
+    speed = 0;
+  }
+
   void reset() {
     x = 0;
     y = 0;
@@ -40,5 +53,8 @@ class Player extends Component {
     speed = maxSpeed;
   }
 
-  void render(Canvas canvas, Size size) {}
+  @override
+  String toString() {
+    return 'Player =  XYZ: (${x.toInt()}, ${y.toInt()}, ${z.toInt()}) / Speed: $speed';
+  }
 }

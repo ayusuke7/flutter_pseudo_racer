@@ -51,18 +51,18 @@ class _GameState extends State<Game> {
   void _update() {
     switch (_state) {
       case GameState.init:
+        _road.init();
         _camera.init();
-        _player.init();
-        _state = GameState.restart;
+        _state = GameState.play;
         break;
       case GameState.play:
-        _player.update(_time);
         _camera.update(_time);
+        _player.update(_time);
         break;
       case GameState.restart:
-        _road.init();
         _player.reset();
-        _state = GameState.play;
+        break;
+      case GameState.pause:
         break;
       case GameState.gameover:
         break;
@@ -79,13 +79,6 @@ class _GameState extends State<Game> {
 
   @override
   Widget build(BuildContext context) {
-    String gameValues = 'Time: ${_time.seconds}s / FPS: ${_time.fps}';
-    String cameraValues =
-        'Camera Z: ${_camera.z} / Distance: ${_camera.distToPlayer}';
-    String playerValues = 'Position Z: ${_player.z} / Speed: ${_player.speed}';
-    String roadValues =
-        'Segments: ${_road.segmentCount} / Width: ${_road.roadWidth} / Length: ${_road.roadLength}';
-
     return MaterialApp(
       home: Scaffold(
         body: Center(
@@ -112,10 +105,10 @@ class _GameState extends State<Game> {
                 ),
                 Column(
                   children: [
-                    gameValues,
-                    cameraValues,
-                    roadValues,
-                    playerValues,
+                    _time.toString(),
+                    _player.toString(),
+                    _camera.toString(),
+                    _road.toString(),
                   ]
                       .map((text) => Text(
                             text,
@@ -138,12 +131,10 @@ class _GameState extends State<Game> {
       event.logicalKey,
     );
 
-    if (!pressed) return KeyEventResult.ignored;
-
-    if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-      // _player.speed = _player.aceleration;
-    } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-      // _player.speed = _player.deceleration;
+    if (pressed && event.logicalKey == LogicalKeyboardKey.arrowUp) {
+      _player.acelerate();
+    } else {
+      _player.decelerate();
     }
 
     return KeyEventResult.handled;

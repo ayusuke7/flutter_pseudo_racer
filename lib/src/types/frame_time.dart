@@ -10,4 +10,9 @@ class FrameTime {
   int get fps => delta > 0 ? 1 ~/ delta : 0;
 
   int get seconds => previous ~/ 1000;
+
+  @override
+  String toString() {
+    return 'Time = Seconds $seconds / FPS $fps';
+  }
 }

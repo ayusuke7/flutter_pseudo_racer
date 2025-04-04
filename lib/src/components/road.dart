@@ -1,11 +1,10 @@
 import 'dart:ui';
 
-import 'package:flutter_fake_racer/src/components/player.dart';
-
 import '../components/camera.dart';
 import '../types/segment.dart';
 import '../types/vector.dart';
 import 'component.dart';
+import 'player.dart';
 
 class Road extends Component {
   late Camera camera;
@@ -17,19 +16,16 @@ class Road extends Component {
   int segmentRumble;
   int segmentVisible;
   int segmentLength;
-
-  int roadLength;
   int roadWidth;
-  int roadLanes;
+
+  int roadLength = 0;
 
   Road({
-    this.segmentLength = 100,
     this.roadWidth = 1000,
-    this.roadLength = 0,
     this.segmentCount = 0,
-    this.segmentVisible = 200,
     this.segmentRumble = 5,
-    this.roadLanes = 3,
+    this.segmentLength = 100,
+    this.segmentVisible = 200,
   });
 
   void init() {
@@ -150,7 +146,29 @@ class Road extends Component {
       current.colors.road,
     );
 
-    // draw rumble strips
+    // draw rumble
+    _drawRumble(
+      canvas,
+      previous,
+      current,
+    );
+
+    // draw lanes
+    _drawLanes(
+      canvas,
+      previous,
+      current,
+    );
+  }
+
+  void _drawRumble(
+    Canvas canvas,
+    Segment previous,
+    Segment current,
+  ) {
+    final p1 = previous.point.screen;
+    final p2 = current.point.screen;
+
     final rumbleW1 = p1.w / 5;
     final rumbleW2 = p2.w / 5;
 
@@ -178,35 +196,43 @@ class Road extends Component {
       p2.y,
       current.colors.rumble,
     );
+  }
 
-    // draw lanes
-    if (current.colors.lane != null) {
-      final lineW1 = (p1.w / 20) / 2;
-      final lineW2 = (p2.w / 20) / 2;
+  void _drawLanes(
+    Canvas canvas,
+    Segment previous,
+    Segment current,
+  ) {
+    if (current.colors.lane == null) return;
 
-      final laneW1 = (p1.w * 2) / roadLanes;
-      final laneW2 = (p2.w * 2) / roadLanes;
+    final p1 = previous.point.screen;
+    final p2 = current.point.screen;
 
-      var laneX1 = p1.x - p1.w;
-      var laneX2 = p2.x - p2.w;
+    final lineW1 = (p1.w / 20) / 2;
+    final lineW2 = (p2.w / 20) / 2;
 
-      for (var i = 1; i < roadLanes; i++) {
-        laneX1 += laneW1;
-        laneX2 += laneW2;
+    final laneW1 = (p1.w * 2) / 3;
+    final laneW2 = (p2.w * 2) / 3;
 
-        _drawPolygon(
-          canvas,
-          laneX1 - lineW1,
-          p1.y,
-          laneX1 + lineW1,
-          p1.y,
-          laneX2 + lineW2,
-          p2.y,
-          laneX2 - lineW2,
-          p2.y,
-          current.colors.lane!,
-        );
-      }
+    var laneX1 = p1.x - p1.w;
+    var laneX2 = p2.x - p2.w;
+
+    for (var i = 1; i < 3; i++) {
+      laneX1 += laneW1;
+      laneX2 += laneW2;
+
+      _drawPolygon(
+        canvas,
+        laneX1 - lineW1,
+        p1.y,
+        laneX1 + lineW1,
+        p1.y,
+        laneX2 + lineW2,
+        p2.y,
+        laneX2 - lineW2,
+        p2.y,
+        current.colors.lane!,
+      );
     }
   }
 
@@ -240,5 +266,10 @@ class Road extends Component {
 
     final index = (positionZ / segmentLength).floor() % segmentCount;
     return segments[index];
+  }
+
+  @override
+  String toString() {
+    return 'Road = segments $segmentCount / width $roadWidth / length $roadLength';
   }
 }

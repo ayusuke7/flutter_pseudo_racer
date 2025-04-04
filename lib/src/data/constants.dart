@@ -3,8 +3,9 @@ const double screenHeight = 480;
 
 enum GameState {
   init,
-  restart,
   play,
+  pause,
+  restart,
   gameover;
 
   int get value => index + 1;

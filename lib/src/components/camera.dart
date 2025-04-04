@@ -28,4 +28,9 @@ class Camera extends Component {
 
     if (z < 0) z += road.roadLength;
   }
+
+  @override
+  String toString() {
+    return 'Camera = XYZ (${x.toInt()}, ${y.toInt()}, ${z.toInt()}) / Distance: $distToPlayer';
+  }
 }
