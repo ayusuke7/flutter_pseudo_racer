@@ -1,5 +1,6 @@
-const double screenWidth = 720;
-const double screenHeight = 480;
+import 'dart:ui';
+
+const Size gameSize = Size(720, 480);
 
 enum GameState {
   init,

@@ -13,6 +13,6 @@ class FrameTime {
 
   @override
   String toString() {
-    return 'Time = Seconds $seconds / FPS $fps';
+    return 'Time = FPS $fps / ${seconds}s';
   }
 }

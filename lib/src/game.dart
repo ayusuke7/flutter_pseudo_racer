@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 
-import 'components/camera.dart';
 import 'components/player.dart';
 import 'components/road.dart';
 import 'data/constants.dart';
-import 'game_scene.dart';
+import 'render.dart';
 import 'types/frame_time.dart';
 
 class Game extends StatefulWidget {
@@ -18,20 +17,13 @@ class Game extends StatefulWidget {
 
 class _GameState extends State<Game> {
   final _time = FrameTime(0, 0);
-  final _road = Road();
-  final _camera = Camera();
   final _player = Player();
+  final _road = Road();
 
   GameState _state = GameState.init;
 
   void _init() {
-    _camera.player = _player;
-    _camera.road = _road;
-
-    _player.camera = _camera;
     _player.road = _road;
-
-    _road.camera = _camera;
     _road.player = _player;
 
     SchedulerBinding.instance.scheduleFrameCallback(_loop);
@@ -52,18 +44,16 @@ class _GameState extends State<Game> {
     switch (_state) {
       case GameState.init:
         _road.init();
-        _camera.init();
+        _player.init();
         _state = GameState.play;
         break;
       case GameState.play:
-        _camera.update(_time);
         _player.update(_time);
         break;
       case GameState.restart:
         _player.reset();
         break;
       case GameState.pause:
-        break;
       case GameState.gameover:
         break;
     }
@@ -81,44 +71,20 @@ class _GameState extends State<Game> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        body: Center(
-          child: ColoredBox(
-            color: Colors.black,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Focus(
-                  autofocus: true,
-                  onKeyEvent: _keyEventHandler,
-                  child: CustomPaint(
-                    size: Size(
-                      screenWidth,
-                      screenHeight,
-                    ),
-                    painter: GameScene(
-                      player: _player,
-                      state: _state,
-                      road: _road,
-                      time: _time,
-                    ),
-                  ),
-                ),
-                Column(
-                  children: [
-                    _time.toString(),
-                    _player.toString(),
-                    _camera.toString(),
-                    _road.toString(),
-                  ]
-                      .map((text) => Text(
-                            text,
-                            style: const TextStyle(
-                              color: Colors.white,
-                            ),
-                          ))
-                      .toList(),
-                ),
-              ],
+        backgroundColor: Colors.black,
+        body: Focus(
+          autofocus: true,
+          onKeyEvent: _keyEventHandler,
+          child: Center(
+            child: CustomPaint(
+              size: gameSize,
+              painter: Render(
+                player: _player,
+                state: _state,
+                road: _road,
+                time: _time,
+                debug: true,
+              ),
             ),
           ),
         ),
@@ -131,10 +97,23 @@ class _GameState extends State<Game> {
       event.logicalKey,
     );
 
-    if (pressed && event.logicalKey == LogicalKeyboardKey.arrowUp) {
-      _player.acelerate();
-    } else {
-      _player.decelerate();
+    if (pressed) {
+      switch (event.logicalKey) {
+        case LogicalKeyboardKey.arrowUp:
+          _player.acelerate();
+          break;
+        case LogicalKeyboardKey.arrowDown:
+          _player.stop();
+          break;
+        case LogicalKeyboardKey.arrowLeft:
+          _player.moveLeft();
+          break;
+        case LogicalKeyboardKey.arrowRight:
+          _player.moveRight();
+          break;
+        default:
+          break;
+      }
     }
 
     return KeyEventResult.handled;

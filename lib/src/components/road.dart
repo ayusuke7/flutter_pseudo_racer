@@ -1,13 +1,11 @@
 import 'dart:ui';
 
-import '../components/camera.dart';
 import '../types/segment.dart';
 import '../types/vector.dart';
 import 'component.dart';
 import 'player.dart';
 
 class Road extends Component {
-  late Camera camera;
   late Player player;
 
   List<Segment> segments = [];
@@ -45,10 +43,11 @@ class Road extends Component {
     roadLength = segmentCount * segmentLength;
   }
 
+  @override
   void render(Canvas canvas, Size size) {
-    var clipBottomLine = size.height;
+    var clipBottomLine = size.height - 10;
 
-    var baseSegment = _getSegment(camera.z);
+    var baseSegment = _getSegment(player.cameraPosition.z);
     var baseIndex = baseSegment.index;
 
     for (var i = 0; i < segmentVisible; i++) {
@@ -58,8 +57,7 @@ class Road extends Component {
 
       _projectSegment(currentSegment, offsetZ, size);
 
-      var currentBottomLine = currentSegment.point.screen.y;
-
+      final currentBottomLine = currentSegment.point.screen.y;
       if (i > 0 && currentBottomLine < clipBottomLine) {
         final previousIndex = currentIndex > 0 ? currentIndex : segmentCount;
         final previousSegment = segments[previousIndex - 1];
@@ -70,18 +68,17 @@ class Road extends Component {
           previousSegment,
           currentSegment,
         );
-
         clipBottomLine = currentBottomLine;
       }
     }
   }
 
   void _projectSegment(Segment segment, int offsetZ, Size size) {
-    final tranX = segment.point.world.x - camera.x;
-    final tranY = segment.point.world.y - camera.y;
-    final tranZ = segment.point.world.z - (camera.z - offsetZ);
+    final tranX = segment.point.world.x - player.cameraPosition.x;
+    final tranY = segment.point.world.y - player.cameraPosition.y;
+    final tranZ = segment.point.world.z - (player.cameraPosition.z - offsetZ);
 
-    segment.point.scale = camera.distToPlane / tranZ;
+    segment.point.scale = player.distToPlane / tranZ;
 
     final projectedX = segment.point.scale * tranX;
     final projectedY = segment.point.scale * tranY;
@@ -248,6 +245,7 @@ class Road extends Component {
     double y4,
     Color color,
   ) {
+    canvas.save();
     canvas.drawPath(
       Path()
         ..moveTo(x1, y1)
@@ -259,6 +257,7 @@ class Road extends Component {
         ..color = color
         ..style = PaintingStyle.fill,
     );
+    canvas.restore();
   }
 
   Segment _getSegment(double positionZ) {
